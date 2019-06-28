@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import com.example.group2.shoppinglist.About.AboutActivity;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultActivity;
 import com.example.group2.shoppinglist.R;
-import com.example.group2.shoppinglist.Settings.SettingsActivity;
 
 public class MainActivity extends AppDefaultActivity {
 
@@ -48,26 +47,6 @@ public class MainActivity extends AppDefaultActivity {
             case R.id.aboutMeMenuItem:
                 Intent i = new Intent(this, AboutActivity.class);
                 startActivity(i);
-                return true;
-//            case R.id.switch_themes:
-//                if(mTheme == R.style.CustomStyle_DarkTheme){
-//                    addThemeToSharedPreferences(LIGHTTHEME);
-//                }
-//                else{
-//                    addThemeToSharedPreferences(DARKTHEME);
-//                }
-//
-////                if(mTheme == R.style.CustomStyle_DarkTheme){
-////                    mTheme = R.style.CustomStyle_LightTheme;
-////                }
-////                else{
-////                    mTheme = R.style.CustomStyle_DarkTheme;
-////                }
-//                this.recreate();
-//                return true;
-            case R.id.preferences:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
                 return true;
 
             default:

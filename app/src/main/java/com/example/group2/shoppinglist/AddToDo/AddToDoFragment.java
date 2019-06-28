@@ -1,5 +1,6 @@
 package com.example.group2.shoppinglist.AddToDo;
 
+import android.app.Application;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -18,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.example.group2.shoppinglist.Analytics.AnalyticsApplication;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.Main.MainFragment;
 import com.example.group2.shoppinglist.R;
@@ -43,21 +43,12 @@ public class AddToDoFragment extends AppDefaultFragment {
     private Toolbar mToolbar;
     private int mUserColor;
     private LinearLayout mContainerLayout;
-    private String theme;
-    AnalyticsApplication app;
+    Application app;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        app = (AnalyticsApplication) getActivity().getApplication();
-
-        theme = getActivity().getSharedPreferences(MainFragment.THEME_PREFERENCES, MODE_PRIVATE).getString(MainFragment.THEME_SAVED, MainFragment.LIGHTTHEME);
-        if (theme.equals(MainFragment.LIGHTTHEME)) {
-            getActivity().setTheme(R.style.CustomStyle_LightTheme);
-            Log.d("OskarSchindler", "Light Theme");
-        } else {
-            getActivity().setTheme(R.style.CustomStyle_DarkTheme);
-        }
+        app = getActivity().getApplication();
 
 
         //Show an X in place of <-
@@ -148,7 +139,6 @@ public class AddToDoFragment extends AppDefaultFragment {
                 if (mToDoTextBodyEditText.length() <= 0) {
                     mToDoTextBodyEditText.setError(getString(R.string.todo_error));
                 } else {
-                    app.send(this, "Action", "Make Todo");
                     makeResult(RESULT_OK);
                     getActivity().finish();
                 }
@@ -190,7 +180,6 @@ public class AddToDoFragment extends AppDefaultFragment {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    app.send(this, "Action", "Discard Todo");
                     makeResult(RESULT_CANCELED);
                     NavUtils.navigateUpFromSameTask(getActivity());
                 }

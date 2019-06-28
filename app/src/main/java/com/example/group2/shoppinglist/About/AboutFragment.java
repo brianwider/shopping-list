@@ -1,5 +1,6 @@
 package com.example.group2.shoppinglist.About;
 
+import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -7,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.group2.shoppinglist.Analytics.AnalyticsApplication;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.R;
 
@@ -16,7 +16,7 @@ public class AboutFragment extends AppDefaultFragment {
     private TextView mVersionTextView;
     private String appVersion = "0.1";
     private Toolbar toolbar;
-    private AnalyticsApplication app;
+    private Application app;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,8 +28,7 @@ public class AboutFragment extends AppDefaultFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        app = (AnalyticsApplication) getActivity().getApplication();
-        app.send(this);
+        app = getActivity().getApplication();
         mVersionTextView = (TextView) view.findViewById(R.id.aboutVersionTextView);
         mVersionTextView.setText(String.format(getResources().getString(R.string.app_version), appVersion));
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);

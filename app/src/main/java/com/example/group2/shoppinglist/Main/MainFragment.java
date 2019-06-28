@@ -1,6 +1,7 @@
 package com.example.group2.shoppinglist.Main;
 
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,10 +31,8 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.group2.shoppinglist.About.AboutActivity;
 import com.example.group2.shoppinglist.AddToDo.AddToDoActivity;
-import com.example.group2.shoppinglist.Analytics.AnalyticsApplication;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.R;
-import com.example.group2.shoppinglist.Settings.SettingsActivity;
 import com.example.group2.shoppinglist.Utility.ItemTouchHelperClass;
 import com.example.group2.shoppinglist.Utility.RecyclerViewEmptySupport;
 import com.example.group2.shoppinglist.Utility.StoreRetrieveData;
@@ -70,24 +69,14 @@ public class MainFragment extends AppDefaultFragment {
     public static final String THEME_PREFERENCES = "com.group2.themepref";
     public static final String RECREATE_ACTIVITY = "com.group2.recreateactivity";
     public static final String THEME_SAVED = "com.group2.savedtheme";
-    public static final String DARKTHEME = "com.group2.darktheme";
     public static final String LIGHTTHEME = "com.group2.lighttheme";
-    private AnalyticsApplication app;
+    private Application app;
 
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        app = (AnalyticsApplication) getActivity().getApplication();
-        theme = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getString(THEME_SAVED, LIGHTTHEME);
-
-        if (theme.equals(LIGHTTHEME)) {
-            mTheme = R.style.CustomStyle_LightTheme;
-        } else {
-            mTheme = R.style.CustomStyle_DarkTheme;
-        }
-        this.getActivity().setTheme(mTheme);
-
+        app = getActivity().getApplication();
         super.onCreate(savedInstanceState);
 
 
@@ -108,7 +97,6 @@ public class MainFragment extends AppDefaultFragment {
             @SuppressWarnings("deprecation")
             @Override
             public void onClick(View v) {
-                app.send(this, "Action", "FAB pressed");
                 Intent newTodo = new Intent(getContext(), AddToDoActivity.class);
                 ToDoItem item = new ToDoItem("","", false, null);
                 int color = ColorGenerator.MATERIAL.getRandomColor();
@@ -119,9 +107,7 @@ public class MainFragment extends AppDefaultFragment {
         });
 
         mRecyclerView = (RecyclerViewEmptySupport) view.findViewById(R.id.toDoRecyclerView);
-        if (theme.equals(LIGHTTHEME)) {
-            mRecyclerView.setBackgroundColor(getResources().getColor(R.color.primary_lightest));
-        }
+        mRecyclerView.setBackgroundColor(getResources().getColor(R.color.primary_lightest));
         mRecyclerView.setEmptyView(view.findViewById(R.id.toDoEmptyView));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -174,9 +160,6 @@ public class MainFragment extends AppDefaultFragment {
     @Override
     public void onResume() {
         super.onResume();
-        app.send(this);
-
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
 
         if (getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
             SharedPreferences.Editor editor = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).edit();
@@ -190,7 +173,7 @@ public class MainFragment extends AppDefaultFragment {
 
     @Override
     public void onStart() {
-        app = (AnalyticsApplication) getActivity().getApplication();
+        app = (Application) getActivity().getApplication();
         super.onStart();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(CHANGE_OCCURED, false)) {
@@ -214,11 +197,6 @@ public class MainFragment extends AppDefaultFragment {
                 Intent i = new Intent(getContext(), AboutActivity.class);
                 startActivity(i);
                 return true;
-            case R.id.preferences:
-                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                startActivity(intent);
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -371,7 +349,6 @@ public class MainFragment extends AppDefaultFragment {
             View mView;
             LinearLayout linearLayout;
             TextView mToDoTextview;
-            //            TextView mColorTextView;
             ImageView mColorImageView;
             TextView mTimeTextView;
 
