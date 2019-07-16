@@ -52,11 +52,11 @@ import static android.content.Context.MODE_PRIVATE;
 public class MainFragment extends AppDefaultFragment {
     private RecyclerViewEmptySupport mRecyclerView;
     private FloatingActionButton mAddToDoItemFAB;
-    private ArrayList<ToDoItem> mToDoItemsArrayList;
+    private ArrayList<ShoppingList> mToDoItemsArrayList;
     private CoordinatorLayout mCoordLayout;
     public static final String TODOITEM = "com.group2.com.group2.shoppinglist.MainActivity";
-    private MainFragment.BasicListAdapter adapter;
-    private MainFragment.ShoppingListAdapter sAdapter;
+    public static final String SHOPPINGLIST = "com.group2.com.group2.shoppinglist.MainActivity";
+    private MainFragment.ShoppingListAdapter adapter;
     private static final int REQUEST_ID_TODO_ITEM = 100;
     private ToDoItem mJustDeletedToDoItem;
     private ShoppingList mJustDeletedShoppingList;
@@ -90,8 +90,7 @@ public class MainFragment extends AppDefaultFragment {
 
         storeRetrieveData = new StoreRetrieveData(getContext(), FILENAME);
         mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
-        adapter = new MainFragment.BasicListAdapter(mToDoItemsArrayList);
-        sAdapter = new MainFragment.ShoppingListAdapter(mToDoItemsArrayList);
+        adapter = new MainFragment.ShoppingListAdapter(mToDoItemsArrayList);
 
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
         mAddToDoItemFAB = (FloatingActionButton) view.findViewById(R.id.addToDoItemFAB);
@@ -183,7 +182,7 @@ public class MainFragment extends AppDefaultFragment {
         if (sharedPreferences.getBoolean(CHANGE_OCCURED, false)) {
 
             mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
-            adapter = new MainFragment.BasicListAdapter(mToDoItemsArrayList);
+            adapter = new MainFragment.ShoppingListAdapter(mToDoItemsArrayList);
             mRecyclerView.setAdapter(adapter);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -209,8 +208,8 @@ public class MainFragment extends AppDefaultFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_CANCELED && requestCode == REQUEST_ID_TODO_ITEM) {
-            ToDoItem item = (ToDoItem) data.getSerializableExtra(TODOITEM);
-            if (item.getToDoText().length() <= 0) {
+            ShoppingList item = (ShoppingList) data.getSerializableExtra(SHOPPINGLIST);
+            if (item.getShoppingListText().length() <= 0) {
                 return;
             }
             boolean existed = false;
@@ -231,31 +230,7 @@ public class MainFragment extends AppDefaultFragment {
         }
     }
 
-    private AlarmManager getAlarmManager() {
-        return (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
-    }
-
-    private boolean doesPendingIntentExist(Intent i, int requestCode) {
-        PendingIntent pi = PendingIntent.getService(getContext(), requestCode, i, PendingIntent.FLAG_NO_CREATE);
-        return pi != null;
-    }
-
-    private void createAlarm(Intent i, int requestCode, long timeInMillis) {
-        AlarmManager am = getAlarmManager();
-        PendingIntent pi = PendingIntent.getService(getContext(), requestCode, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        am.set(AlarmManager.RTC_WAKEUP, timeInMillis, pi);
-    }
-
-    private void deleteAlarm(Intent i, int requestCode) {
-        if (doesPendingIntentExist(i, requestCode)) {
-            PendingIntent pi = PendingIntent.getService(getContext(), requestCode, i, PendingIntent.FLAG_NO_CREATE);
-            pi.cancel();
-            getAlarmManager().cancel(pi);
-            Log.d("OskarSchindler", "PI Cancelled " + doesPendingIntentExist(i, requestCode));
-        }
-    }
-
-    private void addToDataStore(ToDoItem item) {
+    private void addToDataStore(ShoppingList item) {
         mToDoItemsArrayList.add(item);
         adapter.notifyItemInserted(mToDoItemsArrayList.size() - 1);
 

@@ -25,16 +25,16 @@ public class StoreRetrieveData {
         mFileName = filename;
     }
 
-    public static JSONArray toJSONArray(ArrayList<ToDoItem> items) throws JSONException {
+    public static JSONArray toJSONArray(ArrayList<ShoppingList> items) throws JSONException {
         JSONArray jsonArray = new JSONArray();
-        for (ToDoItem item : items) {
+        for (ShoppingList item : items) {
             JSONObject jsonObject = item.toJSON();
             jsonArray.put(jsonObject);
         }
         return jsonArray;
     }
 
-    public void saveToFile(ArrayList<ToDoItem> items) throws JSONException, IOException {
+    public void saveToFile(ArrayList<ShoppingList> items) throws JSONException, IOException {
         FileOutputStream fileOutputStream;
         OutputStreamWriter outputStreamWriter;
         fileOutputStream = mContext.openFileOutput(mFileName, Context.MODE_PRIVATE);
