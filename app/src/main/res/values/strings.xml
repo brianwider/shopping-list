@@ -29,4 +29,5 @@
     <string name="snooze">Snooze</string>
     <string name="remove">Remove</string>
     <string name="todo_error">Please enter a Todo</string>
+    <string name="shoppinglist_error">Please enter a Shopping list</string>
 </resources>

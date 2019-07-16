@@ -1,8 +1,6 @@
 package com.example.group2.shoppinglist.Main;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -16,7 +14,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +28,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.group2.shoppinglist.About.AboutActivity;
 import com.example.group2.shoppinglist.AddShoppingList.AddShoppingListActivity;
+import com.example.group2.shoppinglist.AddToDo.AddToDoActivity;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.R;
 import com.example.group2.shoppinglist.Utility.ItemTouchHelperClass;
@@ -46,20 +44,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static android.app.Activity.RESULT_CANCELED;
-import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 
-public class MainFragment extends AppDefaultFragment {
+public class ToDoListFragment extends AppDefaultFragment {
     private RecyclerViewEmptySupport mRecyclerView;
     private FloatingActionButton mAddShoppingListItemFAB;
-    private ArrayList<ShoppingList> mToDoItemsArrayList;
+    private ArrayList<ToDoItem> mToDoItemsArrayList;
+    private ShoppingList shoppingList;
     private CoordinatorLayout mCoordLayout;
     public static final String TODOITEM = "com.group2.com.group2.shoppinglist.MainActivity";
     public static final String SHOPPINGLIST = "com.group2.com.group2.shoppinglist.MainActivity";
-    private MainFragment.ShoppingListAdapter adapter;
-    private static final int REQUEST_ID_TODO_ITEM = 100;
+    private ToDoListFragment.ShoppingListAdapter adapter;
+    public static final int REQUEST_ID_TODO_ITEM = 100;
     private ToDoItem mJustDeletedToDoItem;
-    private ShoppingList mJustDeletedShoppingList;
     private int mIndexOfDeletedToDoItem;
     public static final String FILENAME = "todoitems.json";
     private StoreRetrieveData storeRetrieveData;
@@ -82,15 +79,17 @@ public class MainFragment extends AppDefaultFragment {
         app = getActivity().getApplication();
         super.onCreate(savedInstanceState);
 
+        Bundle args = getArguments();
+        shoppingList = (ShoppingList) args.getSerializable("shoppingList");
+
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(CHANGE_OCCURED, false);
         editor.apply();
 
-        storeRetrieveData = new StoreRetrieveData(getContext(), FILENAME);
-        mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
-        adapter = new MainFragment.ShoppingListAdapter(mToDoItemsArrayList);
+        mToDoItemsArrayList = shoppingList.getToDoItems();
+        adapter = new ToDoListFragment.ShoppingListAdapter(mToDoItemsArrayList);
 
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
         mAddShoppingListItemFAB = (FloatingActionButton) view.findViewById(R.id.addShoppingListFAB);
@@ -100,11 +99,11 @@ public class MainFragment extends AppDefaultFragment {
             @SuppressWarnings("deprecation")
             @Override
             public void onClick(View v) {
-                Intent newTodo = new Intent(getContext(), AddShoppingListActivity.class);
-                ShoppingList item = new ShoppingList("","", false, null);
+                Intent newTodo = new Intent(getContext(), AddToDoActivity.class);
+                ToDoItem item = new ToDoItem("","", false, null);
                 int color = ColorGenerator.MATERIAL.getRandomColor();
-                item.setShoppinglistColor(color);
-                newTodo.putExtra(SHOPPINGLIST, item);
+                item.setTodoColor(color);
+                newTodo.putExtra(TODOITEM, item);
                 startActivityForResult(newTodo, REQUEST_ID_TODO_ITEM);
             }
         });
@@ -182,8 +181,8 @@ public class MainFragment extends AppDefaultFragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(CHANGE_OCCURED, false)) {
 
-            mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
-            adapter = new MainFragment.ShoppingListAdapter(mToDoItemsArrayList);
+            mToDoItemsArrayList = shoppingList.getToDoItems();
+            adapter = new ToDoListFragment.ShoppingListAdapter(mToDoItemsArrayList);
             mRecyclerView.setAdapter(adapter);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -209,8 +208,8 @@ public class MainFragment extends AppDefaultFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_CANCELED && requestCode == REQUEST_ID_TODO_ITEM) {
-            ShoppingList item = (ShoppingList) data.getSerializableExtra(SHOPPINGLIST);
-            if (item.getShoppingListText().length() <= 0) {
+            ToDoItem item = (ToDoItem) data.getSerializableExtra(TODOITEM);
+            if (item.getToDoText().length() <= 0) {
                 return;
             }
             boolean existed = false;
@@ -231,131 +230,14 @@ public class MainFragment extends AppDefaultFragment {
         }
     }
 
-    private void addToDataStore(ShoppingList item) {
+    private void addToDataStore(ToDoItem item) {
         mToDoItemsArrayList.add(item);
         adapter.notifyItemInserted(mToDoItemsArrayList.size() - 1);
 
     }
 
-    public class BasicListAdapter extends RecyclerView.Adapter<BasicListAdapter.ViewHolder> implements ItemTouchHelperClass.ItemTouchHelperAdapter {
-        private ArrayList<ToDoItem> items;
-
-        @Override
-        public void onItemMoved(int fromPosition, int toPosition) {
-            if (fromPosition < toPosition) {
-                for (int i = fromPosition; i < toPosition; i++) {
-                    Collections.swap(items, i, i + 1);
-                }
-            } else {
-                for (int i = fromPosition; i > toPosition; i--) {
-                    Collections.swap(items, i, i - 1);
-                }
-            }
-            notifyItemMoved(fromPosition, toPosition);
-        }
-
-        @Override
-        public void onItemRemoved(final int position) {
-            mJustDeletedToDoItem = items.remove(position);
-            mIndexOfDeletedToDoItem = position;
-            notifyItemRemoved(position);
-
-            String toShow = "Todo";
-            Snackbar.make(mCoordLayout, "Deleted " + toShow, Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            items.add(mIndexOfDeletedToDoItem, mJustDeletedToDoItem);
-                            notifyItemInserted(mIndexOfDeletedToDoItem);
-                        }
-                    }).show();
-        }
-
-        @Override
-        public BasicListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_circle_try, parent, false);
-            return new ViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(final BasicListAdapter.ViewHolder holder, final int position) {
-            ToDoItem item = items.get(position);
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE);
-            int bgColor;
-            int todoTextColor;
-            if (sharedPreferences.getString(THEME_SAVED, LIGHTTHEME).equals(LIGHTTHEME)) {
-                bgColor = Color.WHITE;
-                todoTextColor = getResources().getColor(R.color.secondary_text);
-            } else {
-                bgColor = Color.DKGRAY;
-                todoTextColor = Color.WHITE;
-            }
-            holder.linearLayout.setBackgroundColor(bgColor);
-
-            if (item.hasReminder() && item.getToDoDate() != null) {
-                holder.mToDoTextview.setMaxLines(1);
-                holder.mTimeTextView.setVisibility(View.VISIBLE);
-            } else {
-                holder.mTimeTextView.setVisibility(View.GONE);
-                holder.mToDoTextview.setMaxLines(2);
-            }
-            holder.mToDoTextview.setText(item.getToDoText());
-            holder.mToDoTextview.setTextColor(todoTextColor);
-            TextDrawable myDrawable = TextDrawable.builder().beginConfig()
-                    .textColor(Color.WHITE)
-                    .useFont(Typeface.DEFAULT)
-                    .toUpperCase()
-                    .endConfig()
-                    .buildRound(item.getToDoText().substring(0, 1), item.getTodoColor());
-
-            holder.mColorImageView.setImageDrawable(myDrawable);
-        }
-
-        @Override
-        public int getItemCount() {
-            return items.size();
-        }
-
-        BasicListAdapter(ArrayList<ToDoItem> items) {
-
-            this.items = items;
-        }
-
-
-        @SuppressWarnings("deprecation")
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            View mView;
-            LinearLayout linearLayout;
-            TextView mToDoTextview;
-            ImageView mColorImageView;
-            TextView mTimeTextView;
-
-            public ViewHolder(View v) {
-                super(v);
-                mView = v;
-                v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ToDoItem item = items.get(ViewHolder.this.getAdapterPosition());
-                        Intent i = new Intent(getContext(), AddShoppingListActivity.class);
-                        i.putExtra(TODOITEM, item);
-                        startActivityForResult(i, REQUEST_ID_TODO_ITEM);
-                    }
-                });
-                mToDoTextview = (TextView) v.findViewById(R.id.toDoListItemTextview);
-                mTimeTextView = (TextView) v.findViewById(R.id.todoListItemTimeTextView);
-                mColorImageView = (ImageView) v.findViewById(R.id.toDoListItemColorImageView);
-                linearLayout = (LinearLayout) v.findViewById(R.id.listItemLinearLayout);
-            }
-
-
-        }
-    }
-
     public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder> implements ItemTouchHelperClass.ItemTouchHelperAdapter {
-        private ArrayList<ShoppingList> lists;
+        private ArrayList<ToDoItem> lists;
 
         @Override
         public void onItemMoved(int fromPosition, int toPosition) {
@@ -373,7 +255,7 @@ public class MainFragment extends AppDefaultFragment {
 
         @Override
         public void onItemRemoved(final int position) {
-            mJustDeletedShoppingList = lists.remove(position);
+            mJustDeletedToDoItem = lists.remove(position);
             mIndexOfDeletedToDoItem = position;
             notifyItemRemoved(position);
 
@@ -383,7 +265,7 @@ public class MainFragment extends AppDefaultFragment {
                         @Override
                         public void onClick(View v) {
 
-                            lists.add(mIndexOfDeletedToDoItem, mJustDeletedShoppingList);
+                            lists.add(mIndexOfDeletedToDoItem, mJustDeletedToDoItem);
                             notifyItemInserted(mIndexOfDeletedToDoItem);
                         }
                     }).show();
@@ -397,7 +279,7 @@ public class MainFragment extends AppDefaultFragment {
 
         @Override
         public void onBindViewHolder(final ShoppingListAdapter.ViewHolder holder, final int position) {
-            ShoppingList list = lists.get(position);
+            ToDoItem list = lists.get(position);
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE);
             int bgColor;
             int todoTextColor;
@@ -410,31 +292,35 @@ public class MainFragment extends AppDefaultFragment {
             }
             holder.linearLayout.setBackgroundColor(bgColor);
 
-            if (list.hasReminder() && list.getShoppingListDate() != null) {
+            if (list.hasReminder() && list.getToDoDate() != null) {
                 holder.mToDoTextview.setMaxLines(1);
                 holder.mTimeTextView.setVisibility(View.VISIBLE);
             } else {
                 holder.mTimeTextView.setVisibility(View.GONE);
                 holder.mToDoTextview.setMaxLines(2);
             }
-            holder.mToDoTextview.setText(list.getShoppingListText());
+            holder.mToDoTextview.setText(list.getToDoText());
             holder.mToDoTextview.setTextColor(todoTextColor);
             TextDrawable myDrawable = TextDrawable.builder().beginConfig()
                     .textColor(Color.WHITE)
                     .useFont(Typeface.DEFAULT)
                     .toUpperCase()
                     .endConfig()
-                    .buildRound(list.getShoppingListText().substring(0, 1), list.getShoppinglistColor());
+                    .buildRound(list.getToDoText().substring(0, 1), list.getTodoColor());
 
             holder.mColorImageView.setImageDrawable(myDrawable);
         }
 
         @Override
         public int getItemCount() {
-            return lists.size();
+            if (lists != null) {
+                return lists.size();
+            } else {
+                return 0;
+            }
         }
 
-        ShoppingListAdapter(ArrayList<ShoppingList> lists) {
+        ShoppingListAdapter(ArrayList<ToDoItem> lists) {
             this.lists = lists;
         }
 
@@ -454,12 +340,11 @@ public class MainFragment extends AppDefaultFragment {
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ShoppingList list = lists.get(ViewHolder.this.getAdapterPosition());
-                        Intent i = new Intent(getContext(), ToDoListActivity.class);
-                        i.putExtra(SHOPPINGLIST, list);
+                        ToDoItem item = lists.get(ViewHolder.this.getAdapterPosition());
+                        Intent i = new Intent(getContext(), AddToDoActivity.class);
+                        i.putExtra(TODOITEM, item);
                         i.putExtra("showTodo", true);
-                        // startActivityForResult(i, REQUEST_ID_TODO_ITEM);
-                        startActivity(i);
+                        startActivityForResult(i, REQUEST_ID_TODO_ITEM);
                     }
                 });
                 mToDoTextview = (TextView) v.findViewById(R.id.toDoListItemTextview);
@@ -475,11 +360,13 @@ public class MainFragment extends AppDefaultFragment {
     @Override
     public void onPause() {
         super.onPause();
-        try {
-            storeRetrieveData.saveToFile(mToDoItemsArrayList);
+        ShoppingList a = shoppingList;
+        /*try {
+
+            storeRetrieveData.saveToFile(shoppingList);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -495,7 +382,12 @@ public class MainFragment extends AppDefaultFragment {
         return R.layout.fragment_main;
     }
 
-    public static MainFragment newInstance() {
-        return new MainFragment();
+    public static ToDoListFragment newInstance(ShoppingList shoppingList) {
+        ToDoListFragment f = new ToDoListFragment();
+        // Supply index input as an argument.
+        Bundle args = new Bundle();
+        args.putSerializable("shoppingList", shoppingList);
+        f.setArguments(args);
+        return f;
     }
 }

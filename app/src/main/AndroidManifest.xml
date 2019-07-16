@@ -31,6 +31,13 @@
             android:screenOrientation="portrait"
             android:parentActivityName="com.example.group2.shoppinglist.Main.MainActivity"
             />
+        <activity android:name="com.example.group2.shoppinglist.Main.ToDoListActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name="com.example.group2.shoppinglist.AddShoppingList.AddShoppingListActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName="com.example.group2.shoppinglist.Main.MainActivity"
+            />
 
         <activity android:name="com.example.group2.shoppinglist.About.AboutActivity"
             android:label="@string/app_name"

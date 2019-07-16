@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class ShoppingList implements Serializable {
     private int mShoppinglistColor;
     private Date mShoppingListDate;
     private UUID mShoppinglistIdentifier;
+    private ArrayList<ToDoItem> toDoItems;
     //add description
     private static final String SHOPPINGLISTDESCRIPTION = "shoppinglistdescription";
     private static final String SHOPPINGLISTTEXT = "shoppinglisttext";
@@ -81,6 +83,14 @@ public class ShoppingList implements Serializable {
 
     public void setShoppingListText(String mShoppingListText) {
         this.mShoppingListText = mShoppingListText;
+    }
+
+    public void setToDoItems(ArrayList<ToDoItem> items) {
+        this.toDoItems = items;
+    }
+
+    public ArrayList<ToDoItem> getToDoItems() {
+        return this.toDoItems;
     }
 
     public boolean hasReminder() {
