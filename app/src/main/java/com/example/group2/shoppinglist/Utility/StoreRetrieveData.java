@@ -44,8 +44,8 @@ public class StoreRetrieveData {
         fileOutputStream.close();
     }
 
-    public ArrayList<ToDoItem> loadFromFile() throws IOException, JSONException {
-        ArrayList<ToDoItem> items = new ArrayList<>();
+    public ArrayList<ShoppingList> loadFromFile() throws IOException, JSONException {
+        ArrayList<ShoppingList> items = new ArrayList<>();
         BufferedReader bufferedReader = null;
         FileInputStream fileInputStream = null;
         try {
@@ -59,7 +59,7 @@ public class StoreRetrieveData {
 
             JSONArray jsonArray = (JSONArray) new JSONTokener(builder.toString()).nextValue();
             for (int i = 0; i < jsonArray.length(); i++) {
-                ToDoItem item = new ToDoItem(jsonArray.getJSONObject(i));
+                ShoppingList item = new ShoppingList(jsonArray.getJSONObject(i));
                 items.add(item);
             }
 

@@ -35,6 +35,7 @@ import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.R;
 import com.example.group2.shoppinglist.Utility.ItemTouchHelperClass;
 import com.example.group2.shoppinglist.Utility.RecyclerViewEmptySupport;
+import com.example.group2.shoppinglist.Utility.ShoppingList;
 import com.example.group2.shoppinglist.Utility.StoreRetrieveData;
 import com.example.group2.shoppinglist.Utility.ToDoItem;
 
@@ -55,8 +56,10 @@ public class MainFragment extends AppDefaultFragment {
     private CoordinatorLayout mCoordLayout;
     public static final String TODOITEM = "com.group2.com.group2.shoppinglist.MainActivity";
     private MainFragment.BasicListAdapter adapter;
+    private MainFragment.ShoppingListAdapter sAdapter;
     private static final int REQUEST_ID_TODO_ITEM = 100;
     private ToDoItem mJustDeletedToDoItem;
+    private ShoppingList mJustDeletedShoppingList;
     private int mIndexOfDeletedToDoItem;
     public static final String FILENAME = "todoitems.json";
     private StoreRetrieveData storeRetrieveData;
@@ -88,6 +91,7 @@ public class MainFragment extends AppDefaultFragment {
         storeRetrieveData = new StoreRetrieveData(getContext(), FILENAME);
         mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
         adapter = new MainFragment.BasicListAdapter(mToDoItemsArrayList);
+        sAdapter = new MainFragment.ShoppingListAdapter(mToDoItemsArrayList);
 
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
         mAddToDoItemFAB = (FloatingActionButton) view.findViewById(R.id.addToDoItemFAB);
@@ -140,8 +144,8 @@ public class MainFragment extends AppDefaultFragment {
         mRecyclerView.setAdapter(adapter);
     }
 
-    public static ArrayList<ToDoItem> getLocallyStoredData(StoreRetrieveData storeRetrieveData) {
-        ArrayList<ToDoItem> items = null;
+    public static ArrayList<ShoppingList> getLocallyStoredData(StoreRetrieveData storeRetrieveData) {
+        ArrayList<ShoppingList> items = null;
 
         try {
             items = storeRetrieveData.loadFromFile();
@@ -361,6 +365,122 @@ public class MainFragment extends AppDefaultFragment {
                         ToDoItem item = items.get(ViewHolder.this.getAdapterPosition());
                         Intent i = new Intent(getContext(), AddToDoActivity.class);
                         i.putExtra(TODOITEM, item);
+                        startActivityForResult(i, REQUEST_ID_TODO_ITEM);
+                    }
+                });
+                mToDoTextview = (TextView) v.findViewById(R.id.toDoListItemTextview);
+                mTimeTextView = (TextView) v.findViewById(R.id.todoListItemTimeTextView);
+                mColorImageView = (ImageView) v.findViewById(R.id.toDoListItemColorImageView);
+                linearLayout = (LinearLayout) v.findViewById(R.id.listItemLinearLayout);
+            }
+
+
+        }
+    }
+
+    public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder> implements ItemTouchHelperClass.ItemTouchHelperAdapter {
+        private ArrayList<ShoppingList> lists;
+
+        @Override
+        public void onItemMoved(int fromPosition, int toPosition) {
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    Collections.swap(lists, i, i + 1);
+                }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(lists, i, i - 1);
+                }
+            }
+            notifyItemMoved(fromPosition, toPosition);
+        }
+
+        @Override
+        public void onItemRemoved(final int position) {
+            mJustDeletedShoppingList = lists.remove(position);
+            mIndexOfDeletedToDoItem = position;
+            notifyItemRemoved(position);
+
+            String toShow = "Todo";
+            Snackbar.make(mCoordLayout, "Deleted " + toShow, Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            lists.add(mIndexOfDeletedToDoItem, mJustDeletedShoppingList);
+                            notifyItemInserted(mIndexOfDeletedToDoItem);
+                        }
+                    }).show();
+        }
+
+        @Override
+        public ShoppingListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_circle_try, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(final ShoppingListAdapter.ViewHolder holder, final int position) {
+            ShoppingList list = lists.get(position);
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE);
+            int bgColor;
+            int todoTextColor;
+            if (sharedPreferences.getString(THEME_SAVED, LIGHTTHEME).equals(LIGHTTHEME)) {
+                bgColor = Color.WHITE;
+                todoTextColor = getResources().getColor(R.color.secondary_text);
+            } else {
+                bgColor = Color.DKGRAY;
+                todoTextColor = Color.WHITE;
+            }
+            holder.linearLayout.setBackgroundColor(bgColor);
+
+            if (list.hasReminder() && list.getShoppingListDate() != null) {
+                holder.mToDoTextview.setMaxLines(1);
+                holder.mTimeTextView.setVisibility(View.VISIBLE);
+            } else {
+                holder.mTimeTextView.setVisibility(View.GONE);
+                holder.mToDoTextview.setMaxLines(2);
+            }
+            holder.mToDoTextview.setText(list.getShoppingListText());
+            holder.mToDoTextview.setTextColor(todoTextColor);
+            TextDrawable myDrawable = TextDrawable.builder().beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(Typeface.DEFAULT)
+                    .toUpperCase()
+                    .endConfig()
+                    .buildRound(list.getShoppingListText().substring(0, 1), list.getShoppinglistColor());
+
+            holder.mColorImageView.setImageDrawable(myDrawable);
+        }
+
+        @Override
+        public int getItemCount() {
+            return lists.size();
+        }
+
+        ShoppingListAdapter(ArrayList<ShoppingList> lists) {
+            this.lists = lists;
+        }
+
+
+        @SuppressWarnings("deprecation")
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            View mView;
+            LinearLayout linearLayout;
+            TextView mToDoTextview;
+            ImageView mColorImageView;
+            TextView mTimeTextView;
+
+            public ViewHolder(View v) {
+                super(v);
+                mView = v;
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShoppingList list = lists.get(ViewHolder.this.getAdapterPosition());
+                        Intent i = new Intent(getContext(), AddToDoActivity.class);
+                        i.putExtra(TODOITEM, list);
                         startActivityForResult(i, REQUEST_ID_TODO_ITEM);
                     }
                 });
