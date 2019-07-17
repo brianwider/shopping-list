@@ -50,8 +50,8 @@ public class MainFragment extends AppDefaultFragment {
     private FloatingActionButton mAddShoppingListItemFAB;
     private ArrayList<ShoppingList> mToDoItemsArrayList;
     private CoordinatorLayout mCoordLayout;
-    public static final String TODOITEM = "com.group2.com.group2.shoppinglist.MainActivity";
-    public static final String SHOPPINGLIST = "com.group2.com.group2.shoppinglist.MainActivity";
+    public static final String TODOITEM = "com.group2.shoppinglist.ToDoListActivity";
+    public static final String SHOPPINGLIST = "com.group2.shoppinglist.MainActivity";
     private MainFragment.ShoppingListAdapter adapter;
     private static final int REQUEST_ID_TODO_ITEM = 100;
     private ToDoItem mJustDeletedToDoItem;
