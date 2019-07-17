@@ -48,7 +48,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class ToDoListFragment extends AppDefaultFragment {
     private RecyclerViewEmptySupport mRecyclerView;
-    private FloatingActionButton mAddShoppingListItemFAB;
+    private FloatingActionButton mAddTodoItemFAB;
     private ArrayList<ToDoItem> mToDoItemsArrayList;
     private ShoppingList shoppingList;
     private CoordinatorLayout mCoordLayout;
@@ -92,9 +92,9 @@ public class ToDoListFragment extends AppDefaultFragment {
         adapter = new ToDoListFragment.ShoppingListAdapter(mToDoItemsArrayList);
 
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
-        mAddShoppingListItemFAB = (FloatingActionButton) view.findViewById(R.id.addShoppingListFAB);
+        mAddTodoItemFAB = (FloatingActionButton) view.findViewById(R.id.addToDoItemFAB);
 
-        mAddShoppingListItemFAB.setOnClickListener(new View.OnClickListener() {
+        mAddTodoItemFAB.setOnClickListener(new View.OnClickListener() {
 
             @SuppressWarnings("deprecation")
             @Override
@@ -120,15 +120,15 @@ public class ToDoListFragment extends AppDefaultFragment {
             @Override
             public void show() {
 
-                mAddShoppingListItemFAB.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                mAddTodoItemFAB.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
             }
 
             @Override
             public void hide() {
 
-                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mAddShoppingListItemFAB.getLayoutParams();
+                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mAddTodoItemFAB.getLayoutParams();
                 int fabMargin = lp.bottomMargin;
-                mAddShoppingListItemFAB.animate().translationY(mAddShoppingListItemFAB.getHeight() + fabMargin).setInterpolator(new AccelerateInterpolator(2.0f)).start();
+                mAddTodoItemFAB.animate().translationY(mAddTodoItemFAB.getHeight() + fabMargin).setInterpolator(new AccelerateInterpolator(2.0f)).start();
             }
         };
         mRecyclerView.addOnScrollListener(customRecyclerScrollViewListener);
@@ -207,6 +207,7 @@ public class ToDoListFragment extends AppDefaultFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_CANCELED && requestCode == REQUEST_ID_TODO_ITEM) {
             ToDoItem item = (ToDoItem) data.getSerializableExtra(TODOITEM);
             if (item.getToDoText().length() <= 0) {
@@ -379,7 +380,7 @@ public class ToDoListFragment extends AppDefaultFragment {
 
     @Override
     protected int layoutRes() {
-        return R.layout.fragment_main;
+        return R.layout.fragment_todo;
     }
 
     public static ToDoListFragment newInstance(ShoppingList shoppingList) {

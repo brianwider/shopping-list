@@ -2,7 +2,8 @@
 <resources>
     <string name="app_name">Shopping list</string>
     <string name="action_settings">Settings</string>
-    <string name="no_to_dos">You don\'t have any todos</string>
+    <string name="no_to_dos">You don\'t have any items</string>
+    <string name="no_shopping_lists">You don\'t have any shopping lists</string>
     <string name="title">Title</string>
     <string name="remind_me">Remind Me</string>
     <string name="choose_date">Date</string>

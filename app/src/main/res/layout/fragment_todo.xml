@@ -26,7 +26,7 @@
                 android:layout_height="100dp"/>
 
             <TextView
-                android:text="@string/no_shopping_lists"
+                android:text="@string/no_to_dos"
                 android:textColor="@color/secondary_text"
                 android:textSize="16sp"
                 android:paddingTop="4dp"
@@ -53,7 +53,7 @@
 
         <android.support.design.widget.FloatingActionButton
             android:src="@drawable/ic_add_white_24dp"
-            android:id="@+id/addShoppingListFAB"
+            android:id="@+id/addToDoItemFAB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

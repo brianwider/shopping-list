@@ -64,7 +64,7 @@ public class ToDoListActivity extends AppDefaultActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ToDoListFragment.REQUEST_ID_TODO_ITEM) {
             if (resultCode == Activity.RESULT_OK){
                 ToDoItem item = (ToDoItem) data.getSerializableExtra(ToDoListFragment.TODOITEM);
