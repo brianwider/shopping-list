@@ -11,18 +11,14 @@ import java.util.UUID;
 public class ShoppingList implements Serializable {
     private String mShoppingListText;
     private boolean mHasReminder;
-    //add description
     private String mShoppingListDescription;
-    //    private Date mLastEdited;
     private int mShoppinglistColor;
     private Date mShoppingListDate;
     private UUID mShoppinglistIdentifier;
     private ArrayList<ToDoItem> toDoItems;
-    //add description
     private static final String SHOPPINGLISTDESCRIPTION = "shoppinglistdescription";
     private static final String SHOPPINGLISTTEXT = "shoppinglisttext";
     private static final String SHOPPINGLISTREMINDER = "shoppinglistreminder";
-    //    private static final String SHOPPINGLISTLASTEDITED = "shoppinglistlastedited";
     private static final String SHOPPINGLISTCOLOR = "shoppinglistcolor";
     private static final String SHOPPINGLISTDATE = "shoppinglistdate";
     private static final String SHOPPINGLISTIDENTIFIER = "shoppinglistidentifier";
@@ -45,9 +41,6 @@ public class ShoppingList implements Serializable {
 
         mShoppinglistIdentifier = UUID.fromString(jsonObject.getString(SHOPPINGLISTIDENTIFIER));
 
-//        if(jsonObject.has(SHOPPINGLISTLASTEDITED)){
-//            mLastEdited = new Date(jsonObject.getLong(SHOPPINGLISTLASTEDITED));
-//        }
         if (jsonObject.has(SHOPPINGLISTDATE)) {
             mShoppingListDate = new Date(jsonObject.getLong(SHOPPINGLISTDATE));
         }
@@ -58,7 +51,6 @@ public class ShoppingList implements Serializable {
         jsonObject.put(SHOPPINGLISTTEXT, mShoppingListText);
         jsonObject.put(SHOPPINGLISTREMINDER, mHasReminder);
         jsonObject.put(SHOPPINGLISTDESCRIPTION, mShoppingListDescription);
-//        jsonObject.put(SHOPPINGLISTLASTEDITED, mLastEdited.getTime());
         if (mShoppingListDate != null) {
             jsonObject.put(SHOPPINGLISTDATE, mShoppingListDate.getTime());
         }
@@ -66,11 +58,6 @@ public class ShoppingList implements Serializable {
         jsonObject.put(SHOPPINGLISTIDENTIFIER, mShoppinglistIdentifier.toString());
 
         return jsonObject;
-    }
-
-
-    public ShoppingList() {
-        this("Clean my room","Sweep and Mop my Room", true, new Date());
     }
 
     public String getmShoppingListDescription() { return mShoppingListDescription;}
@@ -97,10 +84,6 @@ public class ShoppingList implements Serializable {
         return mHasReminder;
     }
 
-    public void setHasReminder(boolean mHasReminder) {
-        this.mHasReminder = mHasReminder;
-    }
-
     public Date getShoppingListDate() {
         return mShoppingListDate;
     }
@@ -116,7 +99,6 @@ public class ShoppingList implements Serializable {
     public void setShoppingListDate(Date mShoppingListDate) {
         this.mShoppingListDate = mShoppingListDate;
     }
-
 
     public UUID getIdentifier() {
         return mShoppinglistIdentifier;

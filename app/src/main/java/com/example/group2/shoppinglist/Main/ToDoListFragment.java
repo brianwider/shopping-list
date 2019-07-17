@@ -182,7 +182,6 @@ public class ToDoListFragment extends AppDefaultFragment {
             editor.putBoolean(CHANGE_OCCURED, false);
             editor.apply();
 
-
         }
     }
 
