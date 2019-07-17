@@ -52,10 +52,10 @@ public class ToDoListFragment extends AppDefaultFragment {
     private ArrayList<ToDoItem> mToDoItemsArrayList;
     private ShoppingList shoppingList;
     private CoordinatorLayout mCoordLayout;
-    public static final String TODOITEM = "com.group2.com.group2.shoppinglist.MainActivity";
+    public static final String TODOITEM = "com.group2.com.group2.shoppinglist.ToDoListActivity";
     public static final String SHOPPINGLIST = "com.group2.com.group2.shoppinglist.MainActivity";
     private ToDoListFragment.ShoppingListAdapter adapter;
-    public static final int REQUEST_ID_TODO_ITEM = 100;
+    public static final int REQUEST_ID_TODO_ITEM = 101;
     private ToDoItem mJustDeletedToDoItem;
     private int mIndexOfDeletedToDoItem;
     public static final String FILENAME = "todoitems.json";
@@ -81,6 +81,7 @@ public class ToDoListFragment extends AppDefaultFragment {
 
         Bundle args = getArguments();
         shoppingList = (ShoppingList) args.getSerializable("shoppingList");
+        int shoppingListIndex = 0;
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
@@ -88,7 +89,15 @@ public class ToDoListFragment extends AppDefaultFragment {
         editor.putBoolean(CHANGE_OCCURED, false);
         editor.apply();
 
-        mToDoItemsArrayList = shoppingList.getToDoItems();
+        storeRetrieveData = new StoreRetrieveData(getContext(), FILENAME);
+        ArrayList<ShoppingList> items = getLocallyStoredData(storeRetrieveData);
+
+        for(int i = 0; i < items.size(); i++) {
+            if (items.get(i).getIdentifier().equals(shoppingList.getIdentifier())) {
+                shoppingListIndex = i;
+            }
+        }
+        mToDoItemsArrayList = items.get(shoppingListIndex).getToDoItems();
         adapter = new ToDoListFragment.ShoppingListAdapter(mToDoItemsArrayList);
 
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
@@ -226,15 +235,18 @@ public class ToDoListFragment extends AppDefaultFragment {
             if (!existed) {
                 addToDataStore(item);
             }
-
-
         }
     }
 
     private void addToDataStore(ToDoItem item) {
         mToDoItemsArrayList.add(item);
+        shoppingList.setToDoItems(mToDoItemsArrayList);
         adapter.notifyItemInserted(mToDoItemsArrayList.size() - 1);
-
+        try {
+            storeRetrieveData.saveToDoToFile(shoppingList);
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder> implements ItemTouchHelperClass.ItemTouchHelperAdapter {
@@ -361,13 +373,12 @@ public class ToDoListFragment extends AppDefaultFragment {
     @Override
     public void onPause() {
         super.onPause();
-        ShoppingList a = shoppingList;
-        /*try {
+        try {
 
-            storeRetrieveData.saveToFile(shoppingList);
+            storeRetrieveData.saveToDoToFile(shoppingList);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
 

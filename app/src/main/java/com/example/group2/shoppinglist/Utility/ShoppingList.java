@@ -1,10 +1,16 @@
 package com.example.group2.shoppinglist.Utility;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,6 +28,7 @@ public class ShoppingList implements Serializable {
     private static final String SHOPPINGLISTDESCRIPTION = "shoppinglistdescription";
     private static final String SHOPPINGLISTTEXT = "shoppinglisttext";
     private static final String SHOPPINGLISTREMINDER = "shoppinglistreminder";
+    private static final String SHOPPINGLISTTODOITEMS = "shoppinglisttodoitems";
     //    private static final String SHOPPINGLISTLASTEDITED = "shoppinglistlastedited";
     private static final String SHOPPINGLISTCOLOR = "shoppinglistcolor";
     private static final String SHOPPINGLISTDATE = "shoppinglistdate";
@@ -42,6 +49,21 @@ public class ShoppingList implements Serializable {
         mShoppingListDescription = jsonObject.getString(SHOPPINGLISTDESCRIPTION);
         mHasReminder = jsonObject.getBoolean(SHOPPINGLISTREMINDER);
         mShoppinglistColor = jsonObject.getInt(SHOPPINGLISTCOLOR);
+        Gson a = new Gson();
+        ArrayList<ToDoItem> items = new ArrayList<>();
+        JSONArray jsonArray = null;
+        if (jsonObject.has(SHOPPINGLISTTODOITEMS)) {
+            jsonArray = new JSONArray(jsonObject.getString(SHOPPINGLISTTODOITEMS));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                ToDoItem item = new ToDoItem(jsonArray.getJSONObject(i));
+                items.add(item);
+            }
+            //items = new ArrayList<>(Arrays.asList(a.fromJson(jsonObject.getString(SHOPPINGLISTTODOITEMS), ToDoItem[].class)));
+        } else {
+            items = new ArrayList<>();
+        }
+
+        this.setToDoItems(items);
 
         mShoppinglistIdentifier = UUID.fromString(jsonObject.getString(SHOPPINGLISTIDENTIFIER));
 
@@ -58,6 +80,14 @@ public class ShoppingList implements Serializable {
         jsonObject.put(SHOPPINGLISTTEXT, mShoppingListText);
         jsonObject.put(SHOPPINGLISTREMINDER, mHasReminder);
         jsonObject.put(SHOPPINGLISTDESCRIPTION, mShoppingListDescription);
+        if (toDoItems != null && toDoItems.size() > 0) {
+            JSONArray jsonArray = new JSONArray();
+            for (ToDoItem todo : toDoItems) {
+                JSONObject jsonTodoObject = todo.toJSON();
+                jsonArray.put(jsonTodoObject);
+            }
+            jsonObject.put(SHOPPINGLISTTODOITEMS, jsonArray.toString());
+        }
 //        jsonObject.put(SHOPPINGLISTLASTEDITED, mLastEdited.getTime());
         if (mShoppingListDate != null) {
             jsonObject.put(SHOPPINGLISTDATE, mShoppingListDate.getTime());

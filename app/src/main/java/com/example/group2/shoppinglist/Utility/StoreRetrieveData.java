@@ -44,6 +44,23 @@ public class StoreRetrieveData {
         fileOutputStream.close();
     }
 
+    public void saveToDoToFile(ShoppingList item) throws JSONException, IOException {
+        ArrayList<ShoppingList> items = this.loadFromFile();
+
+        for(int i = 0; i < items.size(); i++) {
+            if (items.get(i).getIdentifier().equals(item.getIdentifier())) {
+                items.set(i, item);
+            }
+        }
+        FileOutputStream fileOutputStream;
+        OutputStreamWriter outputStreamWriter;
+        fileOutputStream = mContext.openFileOutput(mFileName, Context.MODE_PRIVATE);
+        outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+        outputStreamWriter.write(toJSONArray(items).toString());
+        outputStreamWriter.close();
+        fileOutputStream.close();
+    }
+
     public ArrayList<ShoppingList> loadFromFile() throws IOException, JSONException {
         ArrayList<ShoppingList> items = new ArrayList<>();
         BufferedReader bufferedReader = null;
