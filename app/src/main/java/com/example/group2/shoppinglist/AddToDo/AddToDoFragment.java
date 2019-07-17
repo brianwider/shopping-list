@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 
 import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.Main.MainFragment;
+import com.example.group2.shoppinglist.Main.ToDoListFragment;
 import com.example.group2.shoppinglist.R;
 import com.example.group2.shoppinglist.Utility.ToDoItem;
 
@@ -69,7 +70,7 @@ public class AddToDoFragment extends AppDefaultFragment {
         }
 
 
-        mUserToDoItem = (ToDoItem) getActivity().getIntent().getSerializableExtra(MainFragment.TODOITEM);
+        mUserToDoItem = (ToDoItem) getActivity().getIntent().getSerializableExtra(ToDoListFragment.TODOITEM);
 
         mUserEnteredText = mUserToDoItem.getToDoText();
         mUserEnteredDescription = mUserToDoItem.getmToDoDescription();
@@ -170,7 +171,7 @@ public class AddToDoFragment extends AppDefaultFragment {
             mUserToDoItem.setmToDoDescription(mUserEnteredDescription);
         }
         mUserToDoItem.setTodoColor(mUserColor);
-        i.putExtra(MainFragment.TODOITEM, mUserToDoItem);
+        i.putExtra(ToDoListFragment.TODOITEM, mUserToDoItem);
         getActivity().setResult(result, i);
     }
 

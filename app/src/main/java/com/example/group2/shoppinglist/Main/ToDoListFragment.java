@@ -52,9 +52,8 @@ public class ToDoListFragment extends AppDefaultFragment {
     private ShoppingList shoppingList;
     private CoordinatorLayout mCoordLayout;
     public static final String TODOITEM = "com.group2.shoppinglist.ToDoListActivity";
-    public static final String SHOPPINGLIST = "com.group2.shoppinglist.MainActivity";
     private ToDoListFragment.ShoppingListAdapter adapter;
-    public static final int REQUEST_ID_TODO_ITEM = 100;
+    public static final int REQUEST_ID_TODO_ITEM = 101;
     private ToDoItem mJustDeletedToDoItem;
     private int mIndexOfDeletedToDoItem;
     public static final String FILENAME = "todoitems.json";
