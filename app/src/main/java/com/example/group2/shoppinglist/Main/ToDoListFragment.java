@@ -27,7 +27,6 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.group2.shoppinglist.About.AboutActivity;
-import com.example.group2.shoppinglist.AddShoppingList.AddShoppingListActivity;
 import com.example.group2.shoppinglist.AddToDo.AddToDoActivity;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultFragment;
 import com.example.group2.shoppinglist.R;
@@ -64,8 +63,6 @@ public class ToDoListFragment extends AppDefaultFragment {
     private CustomRecyclerScrollViewListener customRecyclerScrollViewListener;
     public static final String SHARED_PREF_DATA_SET_CHANGED = "com.group2.datasetchanged";
     public static final String CHANGE_OCCURED = "com.group2.changeoccured";
-    private int mTheme = -1;
-    private String theme = "name_of_the_theme";
     public static final String THEME_PREFERENCES = "com.group2.themepref";
     public static final String RECREATE_ACTIVITY = "com.group2.recreateactivity";
     public static final String THEME_SAVED = "com.group2.savedtheme";
@@ -96,7 +93,6 @@ public class ToDoListFragment extends AppDefaultFragment {
 
         mAddShoppingListItemFAB.setOnClickListener(new View.OnClickListener() {
 
-            @SuppressWarnings("deprecation")
             @Override
             public void onClick(View v) {
                 Intent newTodo = new Intent(getContext(), AddToDoActivity.class);
@@ -162,9 +158,6 @@ public class ToDoListFragment extends AppDefaultFragment {
     @Override
     public void onResume() {
         super.onResume();
-        /*if (getActivity().getIntent().getExtras().getBoolean("showTodo")) {
-            getActivity().recreate();
-        }*/
 
         if (getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
             SharedPreferences.Editor editor = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).edit();
@@ -176,7 +169,7 @@ public class ToDoListFragment extends AppDefaultFragment {
 
     @Override
     public void onStart() {
-        app = (Application) getActivity().getApplication();
+        app = getActivity().getApplication();
         super.onStart();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(CHANGE_OCCURED, false)) {
@@ -195,14 +188,12 @@ public class ToDoListFragment extends AppDefaultFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.aboutMeMenuItem:
-                Intent i = new Intent(getContext(), AboutActivity.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.aboutMeMenuItem) {
+            Intent i = new Intent(getContext(), AboutActivity.class);
+            startActivity(i);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -325,8 +316,7 @@ public class ToDoListFragment extends AppDefaultFragment {
         }
 
 
-        @SuppressWarnings("deprecation")
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
 
             View mView;
             LinearLayout linearLayout;
@@ -334,7 +324,7 @@ public class ToDoListFragment extends AppDefaultFragment {
             ImageView mColorImageView;
             TextView mTimeTextView;
 
-            public ViewHolder(View v) {
+            ViewHolder(View v) {
                 super(v);
                 mView = v;
                 v.setOnClickListener(new View.OnClickListener() {

@@ -51,15 +51,12 @@ public class ToDoListActivity extends AppDefaultActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.aboutMeMenuItem:
-                Intent i = new Intent(this, AboutActivity.class);
-                startActivity(i);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.aboutMeMenuItem) {
+            Intent i = new Intent(this, AboutActivity.class);
+            startActivity(i);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.example.group2.shoppinglist.Main;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -16,7 +14,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static android.app.Activity.RESULT_CANCELED;
-import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 
 public class MainFragment extends AppDefaultFragment {
@@ -67,8 +63,6 @@ public class MainFragment extends AppDefaultFragment {
     private CustomRecyclerScrollViewListener customRecyclerScrollViewListener;
     public static final String SHARED_PREF_DATA_SET_CHANGED = "com.group2.datasetchanged";
     public static final String CHANGE_OCCURED = "com.group2.changeoccured";
-    private int mTheme = -1;
-    private String theme = "name_of_the_theme";
     public static final String THEME_PREFERENCES = "com.group2.themepref";
     public static final String RECREATE_ACTIVITY = "com.group2.recreateactivity";
     public static final String THEME_SAVED = "com.group2.savedtheme";
@@ -97,7 +91,6 @@ public class MainFragment extends AppDefaultFragment {
 
         mAddShoppingListItemFAB.setOnClickListener(new View.OnClickListener() {
 
-            @SuppressWarnings("deprecation")
             @Override
             public void onClick(View v) {
                 Intent newTodo = new Intent(getContext(), AddShoppingListActivity.class);
@@ -163,9 +156,6 @@ public class MainFragment extends AppDefaultFragment {
     @Override
     public void onResume() {
         super.onResume();
-        /*if (getActivity().getIntent().getExtras().getBoolean("showTodo")) {
-            getActivity().recreate();
-        }*/
 
         if (getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).getBoolean(RECREATE_ACTIVITY, false)) {
             SharedPreferences.Editor editor = getActivity().getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE).edit();
@@ -177,7 +167,7 @@ public class MainFragment extends AppDefaultFragment {
 
     @Override
     public void onStart() {
-        app = (Application) getActivity().getApplication();
+        app = getActivity().getApplication();
         super.onStart();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(CHANGE_OCCURED, false)) {
@@ -190,20 +180,17 @@ public class MainFragment extends AppDefaultFragment {
             editor.putBoolean(CHANGE_OCCURED, false);
             editor.apply();
 
-
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.aboutMeMenuItem:
-                Intent i = new Intent(getContext(), AboutActivity.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.aboutMeMenuItem) {
+            Intent i = new Intent(getContext(), AboutActivity.class);
+            startActivity(i);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -439,8 +426,7 @@ public class MainFragment extends AppDefaultFragment {
         }
 
 
-        @SuppressWarnings("deprecation")
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
 
             View mView;
             LinearLayout linearLayout;
@@ -448,7 +434,7 @@ public class MainFragment extends AppDefaultFragment {
             ImageView mColorImageView;
             TextView mTimeTextView;
 
-            public ViewHolder(View v) {
+            ViewHolder(View v) {
                 super(v);
                 mView = v;
                 v.setOnClickListener(new View.OnClickListener() {
@@ -458,7 +444,6 @@ public class MainFragment extends AppDefaultFragment {
                         Intent i = new Intent(getContext(), ToDoListActivity.class);
                         i.putExtra(SHOPPINGLIST, list);
                         i.putExtra("showTodo", true);
-                        // startActivityForResult(i, REQUEST_ID_TODO_ITEM);
                         startActivity(i);
                     }
                 });
