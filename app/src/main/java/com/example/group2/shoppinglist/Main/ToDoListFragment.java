@@ -85,7 +85,8 @@ public class ToDoListFragment extends AppDefaultFragment {
         editor.putBoolean(CHANGE_OCCURED, false);
         editor.apply();
 
-        mToDoItemsArrayList = shoppingList.getToDoItems();
+        storeRetrieveData = new StoreRetrieveData(getContext(), FILENAME);
+        mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
         adapter = new ToDoListFragment.ShoppingListAdapter(mToDoItemsArrayList);
 
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
@@ -138,11 +139,11 @@ public class ToDoListFragment extends AppDefaultFragment {
         mRecyclerView.setAdapter(adapter);
     }
 
-    public static ArrayList<ShoppingList> getLocallyStoredData(StoreRetrieveData storeRetrieveData) {
-        ArrayList<ShoppingList> items = null;
+    public static ArrayList<ToDoItem> getLocallyStoredData(StoreRetrieveData storeRetrieveData) {
+        ArrayList<ToDoItem> items = null;
 
         try {
-            items = storeRetrieveData.loadFromFile();
+            items = storeRetrieveData.loadToDoItemsFromFile();
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -349,13 +350,11 @@ public class ToDoListFragment extends AppDefaultFragment {
     @Override
     public void onPause() {
         super.onPause();
-        ShoppingList a = shoppingList;
-        /*try {
-
-            storeRetrieveData.saveToFile(shoppingList);
+        try {
+            storeRetrieveData.saveShoppingListToFile(mToDoItemsArrayList);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
 

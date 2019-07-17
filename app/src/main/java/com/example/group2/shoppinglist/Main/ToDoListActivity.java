@@ -13,6 +13,7 @@ import com.example.group2.shoppinglist.About.AboutActivity;
 import com.example.group2.shoppinglist.AppDefault.AppDefaultActivity;
 import com.example.group2.shoppinglist.R;
 import com.example.group2.shoppinglist.Utility.ShoppingList;
+import com.example.group2.shoppinglist.Utility.StoreRetrieveData;
 import com.example.group2.shoppinglist.Utility.ToDoItem;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 public class ToDoListActivity extends AppDefaultActivity {
 
     private ShoppingList shoppingList;
+    private ToDoListFragment toDoListFragment = new ToDoListFragment();
+    private StoreRetrieveData storeRetrieveData = new StoreRetrieveData(toDoListFragment.getContext(), ToDoListFragment.FILENAME);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

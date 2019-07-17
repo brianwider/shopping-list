@@ -140,7 +140,7 @@ public class MainFragment extends AppDefaultFragment {
         ArrayList<ShoppingList> items = null;
 
         try {
-            items = storeRetrieveData.loadFromFile();
+            items = storeRetrieveData.loadShoppingListFromFile();
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();

@@ -34,6 +34,15 @@ public class StoreRetrieveData {
         return jsonArray;
     }
 
+    public static JSONArray shoppingListToJSONArray(ArrayList<ToDoItem> items) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for (ToDoItem item : items) {
+            JSONObject jsonObject = item.toJSON();
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
+    }
+
     public void saveToFile(ArrayList<ShoppingList> items) throws JSONException, IOException {
         FileOutputStream fileOutputStream;
         OutputStreamWriter outputStreamWriter;
@@ -44,7 +53,17 @@ public class StoreRetrieveData {
         fileOutputStream.close();
     }
 
-    public ArrayList<ShoppingList> loadFromFile() throws IOException, JSONException {
+    public void saveShoppingListToFile(ArrayList<ToDoItem> items) throws JSONException, IOException {
+        FileOutputStream fileOutputStream;
+        OutputStreamWriter outputStreamWriter;
+        fileOutputStream = mContext.openFileOutput(mFileName, Context.MODE_PRIVATE);
+        outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+        outputStreamWriter.write(shoppingListToJSONArray(items).toString());
+        outputStreamWriter.close();
+        fileOutputStream.close();
+    }
+
+    public ArrayList<ShoppingList> loadShoppingListFromFile() throws IOException, JSONException {
         ArrayList<ShoppingList> items = new ArrayList<>();
         BufferedReader bufferedReader = null;
         FileInputStream fileInputStream = null;
@@ -60,6 +79,41 @@ public class StoreRetrieveData {
             JSONArray jsonArray = (JSONArray) new JSONTokener(builder.toString()).nextValue();
             for (int i = 0; i < jsonArray.length(); i++) {
                 ShoppingList item = new ShoppingList(jsonArray.getJSONObject(i));
+                items.add(item);
+            }
+
+
+        } catch (FileNotFoundException fnfe) {
+            //do nothing about it
+            //file won't exist first time app is run
+        } finally {
+            if (bufferedReader != null) {
+                bufferedReader.close();
+            }
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
+
+        }
+        return items;
+    }
+
+    public ArrayList<ToDoItem> loadToDoItemsFromFile() throws IOException, JSONException {
+        ArrayList<ToDoItem> items = new ArrayList<>();
+        BufferedReader bufferedReader = null;
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = mContext.openFileInput(mFileName);
+            StringBuilder builder = new StringBuilder();
+            String line;
+            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            while ((line = bufferedReader.readLine()) != null) {
+                builder.append(line);
+            }
+
+            JSONArray jsonArray = (JSONArray) new JSONTokener(builder.toString()).nextValue();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                ToDoItem item = new ToDoItem(jsonArray.getJSONObject(i));
                 items.add(item);
             }
 
